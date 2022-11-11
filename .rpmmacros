@@ -1,0 +1,12 @@
+%_topdir %(echo $HOME)/rpmbuild
+%set_build_flags \
+  CFLAGS="${CFLAGS:-%{?build_cflags}} -I/usr/include/libdrm" ; export CFLAGS ; \
+  CXXFLAGS="${CXXFLAGS:-%{?build_cxxflags}}" ; export CXXFLAGS ; \
+  FFLAGS="${FFLAGS:-%{?build_fflags}}" ; export FFLAGS ; \
+  FCFLAGS="${FCFLAGS:-%{?build_fflags}}" ; export FCFLAGS ; \
+  LDFLAGS="${LDFLAGS:-%{?build_ldflags}} -L/usr/lib64/xorg/modules -lglamoregl -Wl,-rpath,/usr/lib64/xorg/modules" ; export LDFLAGS
+
+%__arch_install_post \
+    [ "%{buildarch}" = "noarch" ] || QA_CHECK_RPATHS=1 ; \
+    case "${QA_CHECK_RPATHS:-}" in [1yY]*) /usr/lib/rpm/check-rpaths ;; esac \
+    /usr/lib/rpm/check-buildroot
