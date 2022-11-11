@@ -1,0 +1,32 @@
+name: build-action
+
+on:
+  workflow_dispatch:
+
+env:
+  PKGDEST: "/github/home/rpmbuild/RPMS/x86_64"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: rockylinux:9
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3    
+      - name: Prepare for build
+        run: |
+           dnf -y upgrade
+           dnf -y install epel-release
+           dnf -y install rpm-build yum-utils xorg-x11-server-Xorg
+           yum-config-manager --enable crb epel-testing
+      - name: Build xorgrdp
+        run: |
+           dnf download --source xorgxrdp 
+           yum-builddep -y $(ls xorgxrdp-*.src.rpm)
+           cp .rpmmacros $HOME
+           rpmbuild --rebuild $(ls xorgxrdp-*.src.rpm)
+      - uses: actions/upload-artifact@v3
+        with:
+          name: xorgxrdp
+          path: ${{ env.PKGDEST }}/*.rpm
