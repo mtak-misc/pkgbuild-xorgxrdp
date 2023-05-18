@@ -24,8 +24,8 @@ jobs:
         run: |
            dnf download --source xorgxrdp 
            yum-builddep -y $(ls xorgxrdp-*.src.rpm)
-           cp .rpmmacros $HOME
            rpmbuild --rebuild $(ls xorgxrdp-*.src.rpm)
+#           cp .rpmmacros $HOME           
       - uses: actions/upload-artifact@v3
         with:
           name: xorgxrdp
